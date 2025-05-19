@@ -1,0 +1,22 @@
+<!-- res/anim/rotate_30_bidirectional.xml -->
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:interpolator="@android:anim/accelerate_decelerate_interpolator">
+
+    <!-- 右到左旋转（顺时针30度） -->
+    <objectAnimator
+        android:propertyName="rotation"
+        android:duration="400"
+        android:valueFrom="0"
+        android:valueTo="30"
+        android:valueType="floatType"/>
+
+    <!-- 左到右旋转（逆时针回弹） -->
+    <objectAnimator
+        android:propertyName="rotation"
+        android:startOffset="400"
+        android:duration="600"
+        android:valueFrom="30"
+        android:valueTo="-30"
+        android:valueType="floatType"/>
+
+</set>

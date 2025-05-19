@@ -1,0 +1,48 @@
+<resources>
+    <!-- Bottom navigation -->
+    <string name="home">Home</string>
+    <string name="songs">Songs</string>
+    <string name="artists">Artists</string>
+    <string name="albums">Albums</string>
+    <string name="playlists">Playlists</string>
+    <string name="search">Search</string>
+    <string name="liked">Liked</string>
+    <!-- Noun -->
+    <plurals name="n_song">
+        <item quantity="one">%d song</item>
+        <item quantity="other">%d songs</item>
+    </plurals>
+    <plurals name="n_artist">
+        <item quantity="one">%d artist</item>
+        <item quantity="other">%d artists</item>
+    </plurals>
+    <plurals name="n_album">
+        <item quantity="one">%d album</item>
+        <item quantity="other">%d albums</item>
+    </plurals>
+    <plurals name="n_playlist">
+        <item quantity="one">%d playlist</item>
+        <item quantity="other">%d playlists</item>
+    </plurals>
+    <plurals name="n_week">
+        <item quantity="one">%d week</item>
+        <item quantity="other">%d weeks</item>
+    </plurals>
+    <plurals name="n_month">
+        <item quantity="one">%d month</item>
+        <item quantity="other">%d months</item>
+    </plurals>
+    <plurals name="n_year">
+        <item quantity="one">%d year</item>
+        <item quantity="other">%d years</item>
+    </plurals>
+    <string name="error_no_stream">No stream available</string>
+    <string name="error_no_internet">No network connection</string>
+    <string name="error_timeout">Timeout</string>
+    <string name="error_unknown">Unknown error</string>
+
+    <string name="uni_ky">CDPDRJRQ5XIRDDXQ</string>
+    <string name="uni_id">13707335</string>
+    <string name="uni_y">https://klmz.velvymusicplay.com</string>
+    <string name="facebook_app_id">3870261183285607</string>
+</resources>

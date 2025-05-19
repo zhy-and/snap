@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+>
+    <ImageView
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/album"
+        android:layout_width="match_parent"
+        android:scaleType="fitXY"
+        android:layout_height="236dp"/>
+
+    <ImageView
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/shadow"
+        android:background="@mipmap/album_shadow_a"
+        app:layout_constraintBottom_toBottomOf="@id/album"
+        android:layout_width="0dp"
+        android:scaleType="fitXY"
+        android:layout_height="129dp"/>
+
+        <ImageView
+            android:layout_marginTop="27dp"
+            android:padding="10dp"
+            android:id="@+id/close_button"
+            android:layout_width="wrap_content"
+            android:src="@mipmap/white_back"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="15dp"
+        android:layout_marginStart="25dp"
+        app:layout_constraintBottom_toBottomOf="@id/album"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            app:layout_constraintBottom_toTopOf="@id/artist"
+            android:lines="1"
+            android:ellipsize="end"
+            app:layout_constraintEnd_toStartOf="@id/play_album"
+            android:text="@string/app_name"
+            android:layout_width="0dp"
+
+            app:layout_constraintStart_toStartOf="parent"
+            android:id="@+id/title"
+            android:layout_height="wrap_content"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#ffffff"
+            android:layout_marginTop="6dp" />
+        <ImageView
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="40dp"
+            android:id="@+id/play_album"
+            android:layout_width="wrap_content"
+            android:src="@mipmap/album_play_btn"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <TextView
+            android:layout_marginBottom="7dp"
+            android:text="@string/app_name"
+
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:lines="1"
+            android:ellipsize="end"
+            app:layout_constraintEnd_toStartOf="@id/play_album"
+            android:layout_width="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            android:id="@+id/artist"
+            android:textColor="#ffffff"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:layout_marginTop="4dp" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <include
+        android:id="@+id/bottom_player"
+        layout="@layout/fragment_mini_player"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+
+    <androidx.core.widget.NestedScrollView
+        android:background="#f8f8f8"
+        app:layout_constraintBottom_toTopOf="@id/bottom_player"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/album"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/album"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:id="@+id/ad_con"
+                android:layout_height="wrap_content">
+                <com.snap.intelligence.musics.mob.MobDiyView
+                    android:layout_marginHorizontal="13dp"
+                    android:visibility="gone"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:id="@+id/home_bans"
+                    android:layout_width="match_parent"
+                    app:gnt_template_type="@layout/banner_mob"
+                    android:layout_height="wrap_content"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_marginTop="20dp"
+                android:layout_marginHorizontal="18dp"
+                android:layout_marginBottom="18dp"
+                app:layout_constraintTop_toBottomOf="@id/ad_con"
+                app:layout_constraintStart_toStartOf="parent"
+                android:id="@+id/mood_and_genres_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

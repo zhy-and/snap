@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32"
+        />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"/>
+
+<!--    <queries>-->
+<!--        <intent>-->
+<!--            <action android:name="android.media.action.DISPLAY_AUDIO_EFFECT_CONTROL_PANEL" />-->
+<!--        </intent>-->
+<!--    </queries>-->
+    <application
+        android:name=".App"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:appCategory="audio"
+        android:icon="@mipmap/vel_logo"
+        android:label="@string/app_name"
+        tools:replace="android:dataExtractionRules,android:fullBackupContent"
+        android:requestLegacyExternalStorage="true"
+        android:roundIcon="@mipmap/vel_logo_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        tools:targetApi="tiramisu">
+        <meta-data
+            android:name="ScopedStorage"
+            android:value="true" />
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+
+        <activity
+            android:theme="@style/AppTheme.Splash"
+            android:name=".ui.start.SplashView"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.MUSIC_PLAYER" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.APP_MUSIC" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+        </activity>
+        <activity android:name=".ui.playlist.PlayListDetActivity"
+
+            />
+        <activity android:name=".ui.artist.ArtistDetActivity"
+
+            />
+        <activity android:name=".ui.search.MusicSearchActivity"
+
+
+            />
+        <activity android:name=".ui.search.MusicSearchHistoryActivity"
+
+            />
+
+        <activity android:name=".local.LocalHomeActivity"
+            />
+
+        <activity android:name=".ui.about.AboutView"
+            />
+
+        <activity android:name=".ui.about.BroView"
+            />
+
+
+
+        <activity android:name=".local.LocalPlayListActivity"
+            />
+
+        <activity android:name=".local.SongListActivity"
+            />
+        <activity android:name=".ui.queue.QueueActivity"
+            />
+
+        <activity android:name=".ui.music.MainPlayer"
+            android:launchMode="singleTask"
+
+            />
+        <activity android:name=".local.LocalMusicPlayerActivity"
+
+            android:launchMode="singleTask"
+
+            />
+        <activity android:name=".ui.start.HomeActivity"
+            android:launchMode="singleTask"
+
+            />
+
+        <activity android:name=".ui.album.AlbumDetActivity"
+
+            />
+
+
+        <activity android:name=".ui.artist.ArtistItemActivity"
+
+            />
+
+        <activity android:name=".NewReleaseDetailsActivity"
+            />
+        <activity android:name=".MoodDetailsActivity"
+            />
+        <activity android:name=".ui.history.HistoryActivity"
+            />
+
+        <activity android:name=".ui.collect.CollectActivity"
+            />
+
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.FileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+
+        <service
+            android:name=".playback.MusicService"
+            android:exported="true"
+            android:foregroundServiceType="mediaPlayback"
+            tools:ignore="ExportedService">
+            <intent-filter>
+                <action android:name="androidx.media3.session.MediaSessionService" />
+                <action android:name="androidx.media3.session.MediaLibraryService" />
+                <action android:name="android.media.browse.MediaBrowserService" />
+            </intent-filter>
+        </service>
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
+        <!--            android:value="ca-app-pub-3940256099942544~3347511713"/>-->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-2213057844905495~6108509088"/>
+        <meta-data
+            android:name="com.google.android.gms.car.application"
+            android:resource="@xml/automotive_app_desc" />
+    </application>
+
+</manifest>
