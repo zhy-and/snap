@@ -146,7 +146,50 @@ public class JsonInfoArgs {
     private String snapFValue;
     private String snapFOpens;
     private String snapPastTm;
+
+    public String getSnapAFUser() {
+        return snapAFUser;
+    }
+
+    public void setSnapAFUser(String snapAFUser) {
+        this.snapAFUser = snapAFUser;
+    }
+
+
+    public String getCurrentUserPage() {
+        return currentUserPage;
+    }
+
+    public void setCurrentUserPage(String currentUserPage) {
+        this.currentUserPage = currentUserPage;
+    }
+
+    //user當前頁面 * local * snap
+    private String currentUserPage;
+
+    //af拉取到的user來源 * or * non-or
+
+    private String snapAFUser;
+
+    //af拉取到的media來源
+
     private String snapMediaSource;
+
+    //af拉取到的活動
+
     private String snapCampaign;
+
+
+    public String getGoogleRefer() {
+        return googleRefer;
+    }
+
+    public void setGoogleRefer(String googleRefer) {
+        this.googleRefer = googleRefer;
+    }
+
+    //google refer
+    private String googleRefer;
+
 
 }

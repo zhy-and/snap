@@ -29,12 +29,18 @@ import com.snap.intelligence.musics.beans.MobRequestData
 import com.snap.intelligence.musics.beans.AppConfigBean
 import com.snap.intelligence.musics.beans.JsonInfoArgs
 import com.snap.intelligence.musics.beans.LauArgs
+import com.snap.intelligence.musics.beans.PageArgs
 import com.snap.intelligence.musics.constants.SnapPosManager
 import com.snap.intelligence.musics.constants.SnapPosManager.getInstallSys
 import com.snap.intelligence.musics.constants.MMKV_HOME_BACK_NO_FINISH
 import com.snap.intelligence.musics.constants.MMKV_HOME_BTN_NO_FINISH
+import com.snap.intelligence.musics.constants.MMKV_LAUCH_TIME
+import com.snap.intelligence.musics.constants.MUSIC_CONSTANT_AF_USER
+import com.snap.intelligence.musics.constants.MUSIC_CONSTANT_CURRENT_PAGE
+import com.snap.intelligence.musics.constants.MUSIC_CONSTANT_GOOGLE_REFER_SOURCE
 import com.snap.intelligence.musics.db.CommonTools.getCountryInfo
 import com.snap.intelligence.musics.db.CommonTools.loadIds
+import com.snap.intelligence.musics.extensions.logClickEvents
 import com.snap.intelligence.musics.local.LocalHomeActivity
 import com.snap.intelligence.musics.mob.GoogleMobileAdsConsentManager
 import com.snap.intelligence.musics.mob.SnapMobManager
@@ -161,6 +167,9 @@ class SnapBasicInterfaces {
                     snapMediaSource = "mediaSource"+  MMKV.defaultMMKV().getString(
                         MUSIC_CONSTANT_AF_MEDIA_SOURCE,"")
                     snapCampaign = "campaign"+MMKV.defaultMMKV().getString(MUSIC_CONSTANT_AF_CAMPAIGN,"")
+                    snapAFUser = "snapAFUser"+MMKV.defaultMMKV().getString(MUSIC_CONSTANT_AF_USER,"")
+                    googleRefer =  MMKV.defaultMMKV().getString(MUSIC_CONSTANT_GOOGLE_REFER_SOURCE,"empty")
+                    currentUserPage = MMKV.defaultMMKV().getString(MUSIC_CONSTANT_CURRENT_PAGE,"local")
                 })
 //                catPa["gmifru"] = adId.replace("/","-")
 //                catPa["bfjzjt"] =  "Show"
@@ -234,6 +243,23 @@ class SnapBasicInterfaces {
             }
 
         }
+        private fun pageArgs(): String {
+            var json = ""
+            try {
+                json =    Gson().toJson(PageArgs().apply {
+                    snapMediaSource = "mediaSource"+  MMKV.defaultMMKV().getString(
+                        MUSIC_CONSTANT_AF_MEDIA_SOURCE,"")
+                    snapCampaign = "campaign"+MMKV.defaultMMKV().getString(MUSIC_CONSTANT_AF_CAMPAIGN,"")
+                    snapAFUser = "snapAFUser"+MMKV.defaultMMKV().getString(MUSIC_CONSTANT_AF_USER,"")
+                    currentUserPage = MMKV.defaultMMKV().getString(MUSIC_CONSTANT_CURRENT_PAGE,"local")
+                    googleRefer =  MMKV.defaultMMKV().getString(MUSIC_CONSTANT_GOOGLE_REFER_SOURCE,"empty")
+                })
+            }catch (e : Exception){
+                e.printStackTrace()
+            }
+
+            return json
+        }
 
 
         private fun installEventsUpload(){
@@ -272,6 +298,96 @@ class SnapBasicInterfaces {
                         })
                 }
 
+            }catch (e : Exception){
+                e.printStackTrace()
+            }
+
+        }
+
+
+         fun pageAEventsUpload(){
+            try {
+                if (!MMKV.defaultMMKV().getBoolean("page_event_a",false)){
+                    HttpManager.get().upValues(
+                        pageEvents(),
+                        value_info,
+                        object : SnapInterceptor.BasicRequestListener {
+
+                            override fun loadFailed(message: String) {
+
+                            }
+
+                            override fun loadSuccessConfig(configInfo: String) {
+                                LogUtils.e(configInfo)
+//                                Log.e("install","install suc ----- $configInfo")
+
+                                try {
+                                    Gson().fromJson(
+                                        configInfo,
+                                        MobRequestData::class.java
+                                    )?.run {
+                                        if (ymaelo?.firstOrNull()?.rfqhildkpkks?.ufnjdfhe?.firstOrNull()?.yjolftqvviiz?.ycet == 200) {
+                                            MMKV.defaultMMKV().putBoolean("page_event_a",true)
+                                            LogUtils.e("AAAApage_event_a suc -----")
+                                        }
+                                    }
+                                }catch (e : Exception){
+                                    e.printStackTrace()
+                                }
+
+                            }
+
+
+                        })
+                }
+                if (!MMKV.defaultMMKV().getBoolean("firebase_event_a",false)){
+                    logClickEvents("app_local")
+                    MMKV.defaultMMKV().putBoolean("firebase_event_a",true)
+                }
+            }catch (e : Exception){
+                e.printStackTrace()
+            }
+
+        }
+         fun pageBEventsUpload(){
+            try {
+                if (!MMKV.defaultMMKV().getBoolean("page_event_b",false)){
+                    HttpManager.get().upValues(
+                        pageEvents(),
+                        value_info,
+                        object : SnapInterceptor.BasicRequestListener {
+
+                            override fun loadFailed(message: String) {
+
+                            }
+
+                            override fun loadSuccessConfig(configInfo: String) {
+                                LogUtils.e(configInfo)
+//                                Log.e("install","install suc ----- $configInfo")
+
+                                try {
+                                    Gson().fromJson(
+                                        configInfo,
+                                        MobRequestData::class.java
+                                    )?.run {
+                                        if (ymaelo?.firstOrNull()?.rfqhildkpkks?.ufnjdfhe?.firstOrNull()?.yjolftqvviiz?.ycet == 200) {
+                                            MMKV.defaultMMKV().putBoolean("page_event_b",true)
+                                            LogUtils.e("BBBBpage_event_b suc -----")
+                                        }
+                                    }
+                                }catch (e : Exception){
+                                    e.printStackTrace()
+                                }
+
+                            }
+
+
+                        })
+                }
+                if (!MMKV.defaultMMKV().getBoolean("firebase_event_b",false)){
+                    logClickEvents("app_snap")
+                    MMKV.defaultMMKV().putBoolean("firebase_event_b",true)
+                }
             }catch (e : Exception){
                 e.printStackTrace()
             }
@@ -382,6 +498,46 @@ class SnapBasicInterfaces {
         }
 
 
+
+        private fun pageEvents(
+
+        ): HashMap<String, String> {
+            val stringStringHashMap: HashMap<String, String> = java.util.HashMap()
+            try {
+                stringStringHashMap["sisdkn"] = AppUtils.getAppName()
+                stringStringHashMap["apwm"] = "Android"
+                stringStringHashMap["gdd"] = Build.BRAND
+                stringStringHashMap["okdo"] = Build.MODEL
+                stringStringHashMap["zph"] = "10009"
+                stringStringHashMap["yrcjg"] = ""+System.currentTimeMillis()
+                if (!TextUtils.isEmpty(ActivityUtils.getTopActivity().localClassName )){
+                    stringStringHashMap["eqr"] = ActivityUtils.getTopActivity().localClassName
+                }
+                if(!TextUtils.isEmpty(MMKV.defaultMMKV().getString(
+                        MUSIC_CONSTANT_APP_REFER_INFO,"")+"")){
+                    stringStringHashMap["rpu"] = MMKV.defaultMMKV().getString(
+                        MUSIC_CONSTANT_APP_REFER_INFO,"")+""
+                }
+                stringStringHashMap["cmpzhu"] = commonUniIds()
+                stringStringHashMap["rntqxe"] = "" +   loadIds(
+                    App.instance
+                )
+                stringStringHashMap["vrqp"] = Build.VERSION.RELEASE
+                stringStringHashMap["pxwaw"] = AppUtils.getAppVersionName()
+                if(!TextUtils.isEmpty(MMKV.defaultMMKV().getString("ad_id",""))){
+                    stringStringHashMap["izzolj"] = MMKV.defaultMMKV().getString("ad_id","")+""
+                }
+                stringStringHashMap["ebdf"] =  pageArgs()
+
+                stringStringHashMap["smxly"] =  System.currentTimeMillis().toString()+ loadIds(App.instance)
+                LogUtils.e(stringStringHashMap.toString())
+            }catch (e : Exception){
+                e.printStackTrace()
+            }
+            return stringStringHashMap
+        }
+
+
         private fun lauchEvents(
 
         ): HashMap<String, String> {
@@ -446,69 +602,7 @@ class SnapBasicInterfaces {
             }
         }
 
-//        fun referInfoLoads(view: BasicView, flag : Boolean = false) {
-//            if (System.currentTimeMillis() - MMKV.defaultMMKV()
-//                    .getLong(MUSIC_CONSTANT_APP_AD_CACHE_TM, 0) > 60 * 60 * 1000
-//                || referStatusCallBack) {
-//                referStatusCallBack = false
-//                CommonRequestTools.get().referTranslateInfo(
-//                    HashMap(),
-//                    common_basic_info,
-//                    object : TransSpesInters.BasicRequestListener {
-//
-//                        override fun loadFailed(message: String) {
-//                        }
-//
-//                        override fun loadSuccessConfig(configInfo: String) {
-//                            try {
-//                                Gson().fromJson(
-//                                    configInfo,
-//                                    CommonViewModel::class.java
-//                                )?.run {
-//                                    LogUtils.e("refer pares before","vense suc ----- $configInfo")
-//
-//                                    if (yvbgjmfbteobho != null && yvbgjmfbteobho.xgyvsjeazyn != null && yvbgjmfbteobho.xgyvsjeazyn.vscruffsqgprwa != null
-//                                        &&  yvbgjmfbteobho.xgyvsjeazyn.vscruffsqgprwa.nyjxynieiu != null &&
-//                                        yvbgjmfbteobho.xgyvsjeazyn.vscruffsqgprwa.nyjxynieiu.isNotEmpty() &&
-//                                        yvbgjmfbteobho.xgyvsjeazyn.vscruffsqgprwa.nyjxynieiu[0].efkqmycr != null &&
-//                                        yvbgjmfbteobho.xgyvsjeazyn.vscruffsqgprwa.nyjxynieiu[0].efkqmycr.szvrcilxij == 200) {
-//                                        cleanBasicInfo()
-//                                        if (yvbgjmfbteobho.xgyvsjeazyn.vscruffsqgprwa.nyjxynieiu[0].efkqmycr.uiiugudcealz.isNullOrEmpty()) {
-//                                            if (!flag){
-//                                                musToMain(view)
-//                                            }
-//                                            return@run
-//                                        } else {
-//                                            LogUtils.e("data suc ----- $configInfo")
-//                                            MMKV.defaultMMKV()
-//                                                .putString(MUSIC_CONSTANT_APP_AD_DATA, configInfo)
-//                                            MMKV.defaultMMKV().putLong(
-//                                                MUSIC_CONSTANT_APP_AD_CACHE_TM,
-//                                                System.currentTimeMillis()
-//                                            )
-//
-//                                        }
-//                                        MainHomeStudy.homeStudy.initMusConfig(view,flag)
-//                                    } else {
-//                                        if (!flag){
-//                                            musToMain(view)
-//                                        }
-//                                    }
-//                                }
-//                            } catch (e: Exception) {
-//                                MMKV.defaultMMKV().putLong(MUSIC_CONSTANT_APP_AD_CACHE_TM, 0)
-//                                e.printStackTrace()
-//                            }
-//
-//                        }
-//                    })
-//            } else {
-//                if (!flag){
-//                    MainHomeStudy.homeStudy.initMusConfig(view)
-//                }
-//            }
-//            getProductInfos()
-//        }
+
 
         private fun cleanBasicInfo() {
             MMKV.mmkvWithID("mmkv_music_app").clear()
@@ -572,14 +666,18 @@ class SnapBasicInterfaces {
                                                         MMKV.defaultMMKV()
                                                             .putString(MMKV_SYS, i.dbpfqp)
                                                     }
-                                                    if ("back_btn_no_finish" == i.fctaig){
+                                                    if ("lauch_time" == i.fctaig){
                                                         MMKV.defaultMMKV()
-                                                            .putBoolean(MMKV_HOME_BACK_NO_FINISH, i.dbpfqp == "1")
+                                                            .putInt(MMKV_LAUCH_TIME, i.dbpfqp.toInt())
                                                     }
-                                                    if ("home_btn_no_finish" == i.fctaig){
-                                                        MMKV.defaultMMKV()
-                                                            .putBoolean(MMKV_HOME_BTN_NO_FINISH, i.dbpfqp == "1")
-                                                    }
+//                                                    if ("back_btn_no_finish" == i.fctaig){
+//                                                        MMKV.defaultMMKV()
+//                                                            .putBoolean(MMKV_HOME_BACK_NO_FINISH, i.dbpfqp == "1")
+//                                                    }
+//                                                    if ("home_btn_no_finish" == i.fctaig){
+//                                                        MMKV.defaultMMKV()
+//                                                            .putBoolean(MMKV_HOME_BTN_NO_FINISH, i.dbpfqp == "1")
+//                                                    }
                                                     LogUtils.e("-----line", ""+ MMKV.defaultMMKV()
                                                         .getString(MMKV_LINES, ""))
                                                     LogUtils.e("-----coef", ""+ MMKV.defaultMMKV()

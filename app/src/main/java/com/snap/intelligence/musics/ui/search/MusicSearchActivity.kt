@@ -1053,9 +1053,14 @@ class MusicSearchActivity : BasicView() {
         if (binding.searchEditText.text.toString().isEmpty()){
             return
         }
+        try {
             data?.query {
                 insert(SearchHistory(query = binding.searchEditText.text.toString()))
             }
+        }catch (e : Exception){
+            e.printStackTrace()
+        }
+
     }
 
     private fun showAnimations(isShow: Boolean) {

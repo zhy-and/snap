@@ -5,6 +5,7 @@ import android.app.Application
 import android.content.Context
 import android.os.Build
 import android.text.TextUtils
+import android.util.Log
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import androidx.datastore.preferences.core.edit
@@ -26,12 +27,17 @@ import com.snap.intelligence.musics.constants.MUSIC_CONSTANT_APP_REFER_INFO
 import com.snap.intelligence.musics.constants.MUSIC_CONSTANT_IS_M_USER
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.identifier.AdvertisingIdClient
+import com.google.android.gms.common.GoogleApiAvailability
+import com.google.firebase.FirebaseApp
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.snap.intelligence.musics.constants.SnapPosManager.lauchFlag
 import com.snap.intelligence.musics.constants.ContentCountryKey
 import com.snap.intelligence.musics.constants.ContentLanguageKey
 import com.snap.intelligence.musics.constants.CountryCodeToName
 import com.snap.intelligence.musics.constants.InnerTubeCookieKey
 import com.snap.intelligence.musics.constants.LanguageCodeToName
+import com.snap.intelligence.musics.constants.MUSIC_CONSTANT_AF_USER
+import com.snap.intelligence.musics.constants.MUSIC_CONSTANT_GOOGLE_REFER_SOURCE
 
 import com.snap.intelligence.musics.constants.MaxImageCacheSizeKey
 import com.snap.intelligence.musics.constants.ProxyEnabledKey
@@ -49,21 +55,57 @@ import com.tencent.mmkv.MMKV
 import com.zionhuang.innertube.MainBe
 import com.zionhuang.innertube.models.YouTubeLocale
 import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
 import java.net.Proxy
 import java.util.Locale
+import java.util.UUID
 
 
 @HiltAndroidApp
 class App : Application(), ImageLoaderFactory {
     private var referrerClient: InstallReferrerClient?= null
     private var oldTimes = 0L
+    private val appScope = CoroutineScope(
+        SupervisorJob() + Dispatchers.Main.immediate
+    )
 
+    private fun initAdIdWithTimeout() {
+        appScope.launch {
+            try {
+                val adId = withTimeoutOrNull(15_000) { // 15秒超时
+                    withContext(Dispatchers.IO) {
+                        AdvertisingIdClient.getAdvertisingIdInfo(applicationContext).id
+                    }
+                } ?: generateFallbackId()
+//                LogUtils.e("adId---"+adId)
+                if (TextUtils.isEmpty(MMKV.defaultMMKV().getString("ad_id",""))){
+                  MMKV.defaultMMKV().putString("ad_id",adId)
+                }
+            } catch (e: Exception) {
+//                LogUtils.e("AdIdFailed: ${e.message}")
+            }
+        }
+    }
+
+    private fun generateFallbackId(): String {
+        return UUID.randomUUID().toString()
+    }
+
+    override fun onTerminate() {
+        appScope.cancel()
+        super.onTerminate()
+    }
     companion object{
         @JvmField
         var instance: Context? = null
@@ -91,6 +133,7 @@ class App : Application(), ImageLoaderFactory {
             .registerConversionListener(this, object : AppsFlyerConversionListener {
                 override fun onConversionDataSuccess(conversionDataMap: Map<String, Any>) {
                     try {
+//                        LogUtils.e(conversionDataMap.toString())
                         // 判断流量类型
                         val afStatus = conversionDataMap["af_status"] as String?
                         if (!TextUtils.isEmpty(afStatus)){
@@ -98,9 +141,24 @@ class App : Application(), ImageLoaderFactory {
                                 MMKV.defaultMMKV().putBoolean(MUSIC_CONSTANT_IS_M_USER,true)
                             }
                         }
+                        // 判断流量來源
+                        val media_source = conversionDataMap["media_source"] as String?
+                        if (!TextUtils.isEmpty(media_source)){
+                            if (media_source?.contains("facebook",true) == true){
+                                MMKV.defaultMMKV().putBoolean(MUSIC_CONSTANT_IS_M_USER,true)
+                            }
+                        }
+                        // 判断活動名稱
+                        val campaign = conversionDataMap["campaign"] as String?
+                        if (!TextUtils.isEmpty(campaign)){
+                            if (campaign?.contains("0006") == true){
+                                MMKV.defaultMMKV().putBoolean(MUSIC_CONSTANT_IS_M_USER,true)
+                            }
+                        }
 
                         MMKV.defaultMMKV().putString(MUSIC_CONSTANT_AF_MEDIA_SOURCE,conversionDataMap["media_source"] as String?)
                         MMKV.defaultMMKV().putString(MUSIC_CONSTANT_AF_CAMPAIGN,conversionDataMap["campaign"] as String?)
+                        MMKV.defaultMMKV().putString(MUSIC_CONSTANT_AF_USER,conversionDataMap["af_status"] as String?)
 //                        LogUtils.e("AF", "来源afStatus：$afStatus")
                     }catch (e : Exception){
                         e.printStackTrace()
@@ -109,6 +167,7 @@ class App : Application(), ImageLoaderFactory {
                 }
 
                 override fun onConversionDataFail(errorMessage: String) {
+
 
                 } // 其他回调方法省略...
 
@@ -138,6 +197,12 @@ class App : Application(), ImageLoaderFactory {
                                         MMKV.defaultMMKV().putString(MUSIC_CONSTANT_APP_REFER_INFO,referrerUrl)
                                         if (referrerUrl.contains("facebook")){
                                             MMKV.defaultMMKV().putBoolean(MUSIC_CONSTANT_IS_M_USER,true)
+                                            MMKV.defaultMMKV().putString(MUSIC_CONSTANT_GOOGLE_REFER_SOURCE,"facebook")
+                                        }else if (referrerUrl.contains("instagram")){
+                                            MMKV.defaultMMKV().putBoolean(MUSIC_CONSTANT_IS_M_USER,true)
+                                            MMKV.defaultMMKV().putString(MUSIC_CONSTANT_GOOGLE_REFER_SOURCE,"instagram")
+                                        }else{
+                                            MMKV.defaultMMKV().putString(MUSIC_CONSTANT_GOOGLE_REFER_SOURCE,"other")
                                         }
                                         referrerClient?.endConnection()
                                     }
@@ -165,14 +230,10 @@ class App : Application(), ImageLoaderFactory {
                     // Google Play by calling the startConnection() method.
                 }
             })
-            if (TextUtils.isEmpty(MMKV.defaultMMKV().getString("ad_id",""))){
-                Thread{
-                    val adInfo = AdvertisingIdClient.getAdvertisingIdInfo(this)
-                    adInfo?.id?.let {
-                        MMKV.defaultMMKV().putString("ad_id",it)
-                    }
-                }.start()
-            }
+
+            initAdIdWithTimeout()
+
+
             AppUtils.registerAppStatusChangedListener(object : Utils.OnAppStatusChangedListener{
                 var count = 0
                 override fun onForeground(activity: Activity?) {

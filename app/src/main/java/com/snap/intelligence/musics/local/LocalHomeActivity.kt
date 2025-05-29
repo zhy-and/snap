@@ -14,6 +14,7 @@ import android.text.Spanned
 import android.text.TextUtils
 import android.text.style.StyleSpan
 import android.view.KeyEvent
+import android.view.View
 import android.widget.TextView
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,6 +27,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata.MEDIA_TYPE_MUSIC
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.blankj.utilcode.util.SizeUtils
+import com.blankj.utilcode.util.ThreadUtils
 import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
@@ -33,6 +35,8 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.tencent.mmkv.MMKV
 import com.snap.intelligence.musics.BasicView
 import com.snap.intelligence.musics.R
+import com.snap.intelligence.musics.constants.MUSIC_CONSTANT_CURRENT_PAGE
+import com.snap.intelligence.musics.constants.MUSIC_CONSTANT_IS_M_USER
 import com.snap.intelligence.musics.constants.StopMusicOnTaskClearKey
 import com.snap.intelligence.musics.constants.queueInter
 import com.snap.intelligence.musics.databinding.ActivityLocalIndexBinding
@@ -48,8 +52,10 @@ import com.snap.intelligence.musics.playback.MusicService.MusicBinder
 import com.snap.intelligence.musics.playback.PlayerConnection
 import com.snap.intelligence.musics.ui.about.AboutView
 import com.snap.intelligence.musics.ui.queue.QueueActivity
+import com.snap.intelligence.musics.ui.start.HomeActivity
 import com.snap.intelligence.musics.utils.dataStore
 import com.snap.intelligence.musics.utils.get
+import com.snap.intelligence.musics.work.SnapBasicInterfaces
 import kotlinx.coroutines.launch
 
 class LocalHomeActivity : BasicView() {
@@ -144,11 +150,30 @@ class LocalHomeActivity : BasicView() {
     }
     override fun onResume() {
         super.onResume()
-        if (playerConnection != null && playerConnection?.player?.currentMetadata != null && MMKV.defaultMMKV().getBoolean("hasPer",false)){
-            playerConnection?.mediaMetadata?.let {
-                updatePlayerUI(it.value)
+        try {
+            if (playerConnection != null && playerConnection?.player?.currentMetadata != null && MMKV.defaultMMKV().getBoolean("hasPer",false)){
+                playerConnection?.mediaMetadata?.let {
+                    updatePlayerUI(it.value)
+                }
             }
+            //
+            if (MMKV.defaultMMKV().getBoolean(MUSIC_CONSTANT_IS_M_USER,false)){
+                binding.progressBar.visibility = View.VISIBLE
+                ThreadUtils.runOnUiThreadDelayed({
+                    try {
+                        startActivity(Intent(this, HomeActivity::class.java))
+                        finish()
+                    }catch (e : Exception){
+                        e.printStackTrace()
+                    }
+
+                },2000)
+            }
+            SnapBasicInterfaces.pageAEventsUpload()
+        }catch (e : Exception){
+            e.printStackTrace()
         }
+
     }
 
     private fun updatePlayerUI(metadata: MediaMetadata?) {
@@ -166,6 +191,7 @@ class LocalHomeActivity : BasicView() {
         super.onCreate(savedInstanceState)
         binding = ActivityLocalIndexBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        MMKV.defaultMMKV().putString(MUSIC_CONSTANT_CURRENT_PAGE,"local")
         database =  InternalDatabase.newInstance(this)
         setupViewPager()
         setupTabLayout()

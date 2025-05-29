@@ -153,8 +153,11 @@ const val MUSIC_CONSTANT_APP_REFER_INFO = "snap_mmkv_re_infos"
 const val MUSIC_CONSTANT_IS_M_USER = "is_non_organic"
 //渠道
 const val MUSIC_CONSTANT_AF_MEDIA_SOURCE = "af_media_source"
+const val MUSIC_CONSTANT_GOOGLE_REFER_SOURCE = "google_refer_source"
 //廣告id
 const val MUSIC_CONSTANT_AF_CAMPAIGN = "af_campaign"
+const val MUSIC_CONSTANT_AF_USER = "af_status"
+const val MUSIC_CONSTANT_CURRENT_PAGE= "current_page"
 const val MUSIC_CONSTANT_APP_AD_DATA = "snap_mmkv_ads_data"
 const val MUSIC_CONSTANT_APP_IS_AUTO_PLAY = "snap_mmkv_is_auto_play"
 const val MMKV_LINES = "lines"
@@ -162,6 +165,7 @@ const val MMKV_COEFS = "coefs"
 const val MMKV_SYS = "sys_tm"
 const val MMKV_HOME_BACK_NO_FINISH = "finish_is"
 const val MMKV_HOME_BTN_NO_FINISH = "home_btn_finish_is"
+const val MMKV_LAUCH_TIME = "lauch_time"
 
 const val MESSAGE_MSG_CODE = 0x100
 

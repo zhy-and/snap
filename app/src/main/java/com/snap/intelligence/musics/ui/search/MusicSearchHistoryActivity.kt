@@ -83,52 +83,57 @@ class MusicSearchHistoryActivity : BasicView() {
         }
 //        InternalDatabase.newInstance(this@MusicSearchActivity).searchHistory().map { history ->
         lifecycleScope.launch {
-            data =  InternalDatabase.newInstance(this@MusicSearchHistoryActivity)
-           data?.searchHistory()?.collect{
+            try {
+                data =  InternalDatabase.newInstance(this@MusicSearchHistoryActivity)
+                data?.searchHistory()?.collect{
 //                Log.e("history----", it.toString())
-                val list = ArrayList<FlowItem>()
-                newHistoryList = it
-                it.forEach { ios->
+                    val list = ArrayList<FlowItem>()
+                    newHistoryList = it
+                    it.forEach { ios->
                         list.add(FlowItem(ios.query))
                     }
 // 配置Flexbox布局
-               val layoutManager =  FlexboxLayoutManager(this@MusicSearchHistoryActivity)
-               layoutManager.setFlexDirection(FlexDirection.ROW)
-               layoutManager.setJustifyContent(JustifyContent.FLEX_START)
-               layoutManager.maxLine = 3
-               binding.flowList.setLayoutManager(layoutManager)
+                    val layoutManager =  FlexboxLayoutManager(this@MusicSearchHistoryActivity)
+                    layoutManager.setFlexDirection(FlexDirection.ROW)
+                    layoutManager.setJustifyContent(JustifyContent.FLEX_START)
+                    layoutManager.maxLine = 3
+                    binding.flowList.setLayoutManager(layoutManager)
 
-              val adapter =  FlowAdapter(list)
-               adapter.setOnItemClickListener(object :FlowAdapter.OnItemClickListener{
-                   override fun onItemClick(item: FlowItem?) {
-                       startInterActivity(Intent(this@MusicSearchHistoryActivity, MusicSearchActivity::class.java).apply {
-                           putExtra("search_txt",item?.text)
-                       }, searchRecordInter(),true)
+                    val adapter =  FlowAdapter(list)
+                    adapter.setOnItemClickListener(object :FlowAdapter.OnItemClickListener{
+                        override fun onItemClick(item: FlowItem?) {
+                            startInterActivity(Intent(this@MusicSearchHistoryActivity, MusicSearchActivity::class.java).apply {
+                                putExtra("search_txt",item?.text)
+                            }, searchRecordInter(),true)
 
-                   }
+                        }
 
-                   override fun onDeleteClick(position: Int) {
-                       newHistoryList?.let {
-                           if (it.isNullOrEmpty()){
-                               return
-                           }
-                       }
-                       newHistoryList?.forEach {
-                           if (it.query == adapter.data.getOrNull(position)?.text){
-                               data?.query {
-                                   delete(it)
-                               }
-                           }
-                       }
-                       adapter.removeItem(position)
+                        override fun onDeleteClick(position: Int) {
+                            newHistoryList?.let {
+                                if (it.isNullOrEmpty()){
+                                    return
+                                }
+                            }
+                            newHistoryList?.forEach {
+                                if (it.query == adapter.data.getOrNull(position)?.text){
+                                    data?.query {
+                                        delete(it)
+                                    }
+                                }
+                            }
+                            adapter.removeItem(position)
 
-                   }
+                        }
 
-               })
+                    })
 
-               binding.flowList.setAdapter(adapter)
+                    binding.flowList.setAdapter(adapter)
 
-           }
+                }
+            }catch (e : Exception){
+                e.printStackTrace()
+            }
+
         }
 
     }

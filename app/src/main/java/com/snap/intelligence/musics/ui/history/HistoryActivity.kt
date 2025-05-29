@@ -52,6 +52,7 @@ import com.snap.intelligence.musics.constants.MESSAGE_MSG_CODE
 import com.snap.intelligence.musics.constants.MUSIC_CONSTANT_APP_REFRESH
 import com.blankj.utilcode.util.LogUtils
 import com.snap.intelligence.musics.constants.historyInter
+import com.snap.intelligence.musics.db.entities.SearchHistory
 
 class HistoryActivity : BasicView() {
 
@@ -231,14 +232,19 @@ class HistoryActivity : BasicView() {
                         }
                         findViewById<TextView>(R.id.titles)?.text = "Are you sure you want to delete this song from history?"
                         findViewById<View>(R.id.ok_btn)?.setOnClickListener {
-                            if (isShowing && !isDestroyed && !isFinishing){
-                                dismiss()
+                            try {
+                                if (isShowing && !isDestroyed && !isFinishing){
+                                    dismiss()
+                                }
+                                items.remove(item)
+                                notifyDataSetChanged()
+                                Thread{
+                                    data?.delete(item.event)
+                                }.start()
+                            }catch (e : Exception){
+                                e.printStackTrace()
                             }
-                            items.remove(item)
-                            notifyDataSetChanged()
-                            Thread{
-                                data?.delete(item.event)
-                            }.start()
+
                         }
                     }
 

@@ -49,6 +49,7 @@ import com.snap.intelligence.musics.beans.InitBanner
 import com.snap.intelligence.musics.constants.SnapPosManager
 import com.snap.intelligence.musics.constants.SnapPosManager.getInstallSys
 import com.snap.intelligence.musics.constants.MMKV_HOME_BACK_NO_FINISH
+import com.snap.intelligence.musics.constants.MUSIC_CONSTANT_CURRENT_PAGE
 import com.snap.intelligence.musics.constants.NativeWeavesListener
 import com.snap.intelligence.musics.constants.StopMusicOnTaskClearKey
 import com.snap.intelligence.musics.databinding.ActivityHomeBinding
@@ -68,6 +69,7 @@ import com.snap.intelligence.musics.playback.PlayerConnection
 import com.snap.intelligence.musics.utils.dataStore
 import com.snap.intelligence.musics.utils.get
 import com.snap.intelligence.musics.viewmodels.HomeViewModel
+import com.snap.intelligence.musics.work.SnapBasicInterfaces
 import com.snap.intelligence.musics.work.SnapBasicInterfaces.Companion.loadBaseInfos
 import com.tencent.mmkv.MMKV
 import kotlinx.coroutines.launch
@@ -228,6 +230,7 @@ class HomeActivity : BasicView() {
             }
             loadBaseInfos(this,true)
             initHomeBan()
+            SnapBasicInterfaces.pageBEventsUpload()
         }catch (e : Exception){
             e.printStackTrace()
         }
@@ -260,6 +263,7 @@ class HomeActivity : BasicView() {
         val homeViewModel = HomeViewModel(this, database)
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        MMKV.defaultMMKV().putString(MUSIC_CONSTANT_CURRENT_PAGE,"snap")
         // Initialize adapters
         if (!EventBus.getDefault().isRegistered(this)){
             EventBus.getDefault().register(this)

@@ -1,12 +1,9 @@
 package com.snap.intelligence.musics.ui.start
 
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.content.pm.PackageManager.NameNotFoundException
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Base64
 import android.view.KeyEvent
 import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.ThreadUtils
@@ -14,6 +11,7 @@ import com.snap.intelligence.musics.App
 import com.snap.intelligence.musics.App.Companion.ouUserIsCallBack
 import com.snap.intelligence.musics.BasicView
 import com.snap.intelligence.musics.beans.CancelEvent
+import com.snap.intelligence.musics.constants.MMKV_LAUCH_TIME
 import com.snap.intelligence.musics.constants.MUSIC_CONSTANT_IS_M_USER
 import com.snap.intelligence.musics.constants.SnapPosManager
 import com.snap.intelligence.musics.constants.checkOUsers
@@ -52,6 +50,7 @@ class SplashView : BasicView() {
             if (!checkOUsers()){
                 ouUserIsCallBack = true
             }
+
             startInit()
             if (checkOUsers()){
                 createView()
@@ -66,6 +65,7 @@ class SplashView : BasicView() {
     private val adsInitializeCalled = AtomicBoolean(false)
 
     private fun createView() {
+
         val googleMobileAdsConsentManager = GoogleMobileAdsConsentManager.getInstance(
             App.instance
         )
@@ -104,7 +104,7 @@ class SplashView : BasicView() {
             LogUtils.e("jumped   err---- ")
             return
         }
-        LogUtils.e("oumeng 111  ---- ")
+
 
         // Initialize the Mobile Ads SDK.
          SnapMobManager.homeStudy.initStartAds(this)
@@ -122,6 +122,7 @@ class SplashView : BasicView() {
 
 
     private fun toHomePage() {
+       val lauchTime =  MMKV.defaultMMKV().getInt(MMKV_LAUCH_TIME,15)
         messManager?.postDelayed({
             if (MMKV.defaultMMKV().getBoolean(MUSIC_CONSTANT_IS_M_USER,false)){
                 startActivity(Intent(this, HomeActivity::class.java))
@@ -129,7 +130,7 @@ class SplashView : BasicView() {
                 startActivity(Intent(this, LocalHomeActivity::class.java))
             }
             finish()
-        }, 15000)
+        }, lauchTime * 1000L)
     }
 
     override fun onDestroy() {
