@@ -146,6 +146,7 @@ private lateinit var binding: ActLoPlayerBinding
                     startQueuePage()
                 }
             }
+            refreshLoadingStatus(playerConnection?.playbackState?.value ?: Player.STATE_IDLE)
             observePlayerState()
             setupListeners()
         }catch (e : Exception){
@@ -273,10 +274,10 @@ private lateinit var binding: ActLoPlayerBinding
                         startQueuePage()
                         return@setOnClickListener
                     }
-                    if (playerConnection?.player?.repeatMode == REPEAT_MODE_OFF && !isNextPlay){
-                        randomPlay()
-                        return@setOnClickListener
-                    }
+//                    if (playerConnection?.player?.repeatMode == REPEAT_MODE_OFF && !isNextPlay){
+//                        randomPlay()
+//                        return@setOnClickListener
+//                    }
                     if (playerConnection != null) {
                         playerConnection?.seekToPrevious()
                     }
@@ -294,10 +295,10 @@ private lateinit var binding: ActLoPlayerBinding
                         startQueuePage()
                         return@setOnClickListener
                     }
-                    if (playerConnection?.player?.repeatMode == REPEAT_MODE_OFF && !isNextPlay){
-                        randomPlay()
-                        return@setOnClickListener
-                    }
+//                    if (playerConnection?.player?.repeatMode == REPEAT_MODE_OFF && !isNextPlay){
+//                        randomPlay()
+//                        return@setOnClickListener
+//                    }
                     if (playerConnection != null) {
                         playerConnection?.seekToNext()
                     }
@@ -334,32 +335,9 @@ private lateinit var binding: ActLoPlayerBinding
 //                    Log.e("onPlaybackStateChanged","---"+playbackState)
                     updatePlayPauseButton()
                     updateProgress()
+                    refreshLoadingStatus(playbackState)
                 }
 
-                override fun onEvents(player: Player, events: Player.Events) {
-                    super.onEvents(player, events)
-                    if (events.containsAny(Player.EVENT_PLAYBACK_STATE_CHANGED, Player.EVENT_PLAY_WHEN_READY_CHANGED)) {
-                        val isBufferingOrReady = player.playbackState == Player.STATE_BUFFERING
-                        if (isBufferingOrReady) {
-                            try {
-                                if (binding.anims.isInvisible){
-                                    binding.anims.visibility = View.VISIBLE
-                                    binding.anims.playAnimation()
-                                }
-
-                            }catch (e : Exception){
-                                e.printStackTrace()
-                            }
-                        }else if(player.playbackState == Player.STATE_READY){
-                            if (binding.anims.isVisible){
-                                binding.anims.visibility = View.INVISIBLE
-                                binding.anims.cancelAnimation()
-                            }
-                        }
-
-//
-                }
-                }
 
                 override fun onIsPlayingChanged(isPlaying: Boolean) {
 //                    togglePlayback()
@@ -382,21 +360,7 @@ private lateinit var binding: ActLoPlayerBinding
                     updateRepeatButton(repeatMode)
                 }
 
-                override fun onIsLoadingChanged(isLoading: Boolean) {
-                    super.onIsLoadingChanged(isLoading)
-//                    if (isLoading){
-//                        try {
-//                            binding.anims.visibility = View.VISIBLE
-//                            binding.anims.playAnimation()
-//                        }catch (e : Exception){
-//                            e.printStackTrace()
-//                        }
-////
-//                    }else{
-//                        binding.anims.visibility = View.INVISIBLE
-//                        binding.anims.cancelAnimation()
-//                    }
-                }
+
                 override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
 
                 }
@@ -423,6 +387,26 @@ private lateinit var binding: ActLoPlayerBinding
             val isPlaying = playerConnection?.player?.isPlaying ?: return
             binding.playPauseButton?.setImageResource(if (isPlaying) R.mipmap.pause_player else R.mipmap.play_btn_local)
         }
+
+    private fun refreshLoadingStatus(playbackState: Int) {
+        val isBufferingOrReady = playbackState == Player.STATE_BUFFERING
+        if (isBufferingOrReady) {
+            try {
+                if (binding.anims.isInvisible) {
+                    binding.anims.visibility = View.VISIBLE
+                    binding.anims.playAnimation()
+                }
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        } else if (playbackState == Player.STATE_READY) {
+            if (binding.anims.isVisible) {
+                binding.anims.visibility = View.INVISIBLE
+                binding.anims.cancelAnimation()
+            }
+        }
+    }
 
     private fun updateRepeatButton(repeatMode: Int) {
         if ( isFinishing || isDestroyed) return
@@ -643,13 +627,7 @@ private lateinit var binding: ActLoPlayerBinding
         ObjectAnimator.ofFloat(binding.anis, "rotation", binding.anis.getRotation(), -20f)
             .setDuration(300)
             .start();
-//        if (!binding.anims.isAnimating){
-//            binding.anims.repeatMode = LottieDrawable.REVERSE
-//            binding.anims.playAnimation()
-//        }else{
-//            binding.anims.setMinAndMaxFrame(0,0)
-//            binding.anims.playAnimation()
-//        }
+
     }
 
     // 重置转盘位置

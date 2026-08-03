@@ -10,11 +10,11 @@ import com.zionhuang.innertube.models.MusicResponsiveListItemRenderer
 import com.zionhuang.innertube.models.MusicShelfRenderer
 import com.zionhuang.innertube.models.MusicTwoRowItemRenderer
 import com.zionhuang.innertube.models.PlaylistItem
-import com.zionhuang.innertube.models.SectionListRenderer
 import com.zionhuang.innertube.models.SongItem
 import com.zionhuang.innertube.models.YTItem
 import com.zionhuang.innertube.models.filterExplicit
 import com.zionhuang.innertube.models.oddElements
+import com.zionhuang.innertube.models.response.SectionListRenderer
 
 data class ArtistSection(
     val title: String,
@@ -53,7 +53,11 @@ data class ArtistPage(
             return ArtistSection(
                 title = renderer.title?.runs?.firstOrNull()?.text ?: return null,
                 items = renderer.contents?.mapNotNull {
-                    fromMusicResponsiveListItemRenderer(it.musicResponsiveListItemRenderer)
+                    it.musicResponsiveListItemRenderer?.let { it1 ->
+                        fromMusicResponsiveListItemRenderer(
+                            it1
+                        )
+                    }
                 }?.ifEmpty { null } ?: return null,
                 moreEndpoint = renderer.title.runs.firstOrNull()?.navigationEndpoint?.browseEndpoint
             )

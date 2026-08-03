@@ -3,7 +3,7 @@ package com.zionhuang.innertube.pages
 import com.zionhuang.innertube.models.BrowseEndpoint
 import com.zionhuang.innertube.models.GridRenderer
 import com.zionhuang.innertube.models.MusicNavigationButtonRenderer
-import com.zionhuang.innertube.models.SectionListRenderer
+import com.zionhuang.innertube.models.response.SectionListRenderer
 
 data class MoodAndGenres(
     val title: String,

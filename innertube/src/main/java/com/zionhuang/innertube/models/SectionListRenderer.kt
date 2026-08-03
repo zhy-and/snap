@@ -1,6 +1,14 @@
-package com.zionhuang.innertube.models
+package com.zionhuang.innertube.models.response
 
-import com.zionhuang.innertube.models.response.BrowseResponse
+import com.zionhuang.innertube.models.Continuation
+import com.zionhuang.innertube.models.GridRenderer
+import com.zionhuang.innertube.models.MusicCardShelfRenderer
+import com.zionhuang.innertube.models.MusicCarouselShelfRenderer
+import com.zionhuang.innertube.models.MusicDescriptionShelfRenderer
+import com.zionhuang.innertube.models.MusicPlaylistShelfRenderer
+import com.zionhuang.innertube.models.MusicShelfRenderer
+import com.zionhuang.innertube.models.NavigationEndpoint
+import com.zionhuang.innertube.models.Runs
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
@@ -27,6 +35,7 @@ data class SectionListRenderer(
                 data class ChipCloudChipRenderer(
                     val isSelected: Boolean,
                     val navigationEndpoint: NavigationEndpoint,
+                    val onDeselectedCommand: NavigationEndpoint? = null,
                     // The close button doesn't have the following two fields
                     val text: Runs?,
                     val uniqueId: String?,
@@ -44,8 +53,8 @@ data class SectionListRenderer(
         val musicCardShelfRenderer: MusicCardShelfRenderer?,
         val musicPlaylistShelfRenderer: MusicPlaylistShelfRenderer?,
         val musicDescriptionShelfRenderer: MusicDescriptionShelfRenderer?,
+        val musicResponsiveHeaderRenderer: MusicResponsiveHeaderRenderer?,
+        val musicEditablePlaylistDetailHeaderRenderer: MusicEditablePlaylistDetailHeaderRenderer?,
         val gridRenderer: GridRenderer?,
-        val musicResponsiveHeaderRenderer: BrowseResponse.Header.MusicHeaderRenderer?,
-        val musicEditablePlaylistDetailHeaderRenderer: BrowseResponse.Header.MusicEditablePlaylistDetailHeaderRenderer?,
     )
 }

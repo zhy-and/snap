@@ -15,8 +15,8 @@ android {
         applicationId = "com.snap.intelligence.musics"
         minSdk = 24
         targetSdk = 35
-        versionCode = 3
-        versionName = "1.0.2"
+        versionCode = 4
+        versionName = "1.0.3"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -100,7 +100,7 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
         androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     implementation(libs.timber)
-    implementation ("com.tencent:mmkv:1.2.16")
+    implementation ("com.tencent:mmkv:1.3.14")
         implementation ("com.google.code.gson:gson:2.8.9")
     implementation ("io.supercharge:shimmerlayout:2.1.0")
     implementation("com.github.getActivity:XXPermissions:20.0")
@@ -110,7 +110,7 @@ dependencies {
     implementation ("com.geyifeng.immersionbar:immersionbar:3.2.2")
     implementation ("com.google.android.flexbox:flexbox:3.0.0")
 
-    // admob
+    // admob todo
     implementation("com.google.android.gms:play-services-ads:22.4.0")
     implementation ("com.squareup.okhttp3:okhttp:4.10.0")
     implementation ("org.greenrobot:eventbus:3.3.1")
@@ -118,10 +118,12 @@ dependencies {
     implementation ("com.android.installreferrer:installreferrer:2.2")
 
     implementation ("com.appsflyer:af-android-sdk:6.16.2")
-    //fb
+    //fb todo
     implementation (platform("com.google.firebase:firebase-bom:32.1.0"))
     implementation ("com.google.firebase:firebase-analytics")
     implementation ("com.google.firebase:firebase-crashlytics")
     implementation ("com.facebook.android:facebook-android-sdk:11.3.0")
 //    implementation ("com.alibaba:fastjson:1.2.83")
+    implementation("androidx.webkit:webkit:1.14.0")
+    implementation(libs.ktor.serialization.json)
 }

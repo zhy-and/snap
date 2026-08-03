@@ -1,5 +1,6 @@
 package com.zionhuang.innertube.models
 
+import com.zionhuang.innertube.models.response.SectionListRenderer
 import kotlinx.serialization.Serializable
 
 @Serializable

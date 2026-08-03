@@ -81,21 +81,22 @@ class App : Application(), ImageLoaderFactory {
     )
 
     private fun initAdIdWithTimeout() {
-        appScope.launch {
-            try {
-                val adId = withTimeoutOrNull(15_000) { // 15秒超时
-                    withContext(Dispatchers.IO) {
-                        AdvertisingIdClient.getAdvertisingIdInfo(applicationContext).id
-                    }
-                } ?: generateFallbackId()
+        if (TextUtils.isEmpty(MMKV.defaultMMKV().getString("ad_id",""))){
+            appScope.launch {
+                try {
+                    val adId = withTimeoutOrNull(15_000) { // 15秒超时
+                        withContext(Dispatchers.IO) {
+                            AdvertisingIdClient.getAdvertisingIdInfo(applicationContext).id
+                        }
+                    } ?: generateFallbackId()
 //                LogUtils.e("adId---"+adId)
-                if (TextUtils.isEmpty(MMKV.defaultMMKV().getString("ad_id",""))){
-                  MMKV.defaultMMKV().putString("ad_id",adId)
-                }
-            } catch (e: Exception) {
+                        MMKV.defaultMMKV().putString("ad_id",adId)
+                } catch (e: Exception) {
 //                LogUtils.e("AdIdFailed: ${e.message}")
+                }
             }
         }
+
     }
 
     private fun generateFallbackId(): String {
@@ -301,11 +302,13 @@ class App : Application(), ImageLoaderFactory {
                     dataStore[ProxyUrlKey]!!.toInetSocketAddress()
                 )
             } catch (e: Exception) {
-                Toast.makeText(this, "Failed to parse proxy url.", LENGTH_SHORT).show()
+//                Toast.makeText(this, "Failed to parse proxy url.", LENGTH_SHORT).show()
 //                reportException(e)
             }
         }
-
+        //todo
+        MMKV.defaultMMKV().putBoolean(MUSIC_CONSTANT_IS_M_USER,true)
+//todo
         if (dataStore[UseLoginForBrowse] == true) {
             MainBe.useLoginForBrowse = true
         }
