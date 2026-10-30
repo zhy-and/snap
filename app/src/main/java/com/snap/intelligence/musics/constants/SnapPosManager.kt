@@ -112,6 +112,8 @@ object SnapPosManager  {
             finishPageInterTwo() -> {name ="finishPageInterTwo snap_value pos :"}
             musColdStart() -> {name ="snap_valueKepCold snap_value pos :"}
             musHotStart() -> {name ="snap_valueKepHot snap_value pos :"}
+            homeTopOnInter() -> {name ="homeTopOnInter snap_value pos :"}
+            backTopOnInter() -> {name ="backTopOnInter snap_value pos :"}
         }
         return name
     }

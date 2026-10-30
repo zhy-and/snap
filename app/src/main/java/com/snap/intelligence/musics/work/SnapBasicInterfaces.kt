@@ -35,6 +35,8 @@ import com.snap.intelligence.musics.constants.SnapPosManager.getInstallSys
 import com.snap.intelligence.musics.constants.MMKV_HOME_BACK_NO_FINISH
 import com.snap.intelligence.musics.constants.MMKV_HOME_BTN_NO_FINISH
 import com.snap.intelligence.musics.constants.MMKV_LAUCH_TIME
+import com.snap.intelligence.musics.constants.MMKV_CHOICE_HL_COUNT
+import com.snap.intelligence.musics.constants.mmkv_full_content
 import com.snap.intelligence.musics.constants.MUSIC_CONSTANT_AF_USER
 import com.snap.intelligence.musics.constants.MUSIC_CONSTANT_CURRENT_PAGE
 import com.snap.intelligence.musics.constants.MUSIC_CONSTANT_GOOGLE_REFER_SOURCE
@@ -669,6 +671,14 @@ class SnapBasicInterfaces {
                                                     if ("lauch_time" == i.fctaig){
                                                         MMKV.defaultMMKV()
                                                             .putInt(MMKV_LAUCH_TIME, i.dbpfqp.toInt())
+                                                    }
+                                                    if ("inter_count" == i.fctaig){
+                                                        MMKV.defaultMMKV()
+                                                            .putInt(MMKV_CHOICE_HL_COUNT, i.dbpfqp.toInt())
+                                                    }
+                                                    if ("full_content" == i.fctaig){
+                                                        MMKV.defaultMMKV()
+                                                            .putString(mmkv_full_content, i.dbpfqp)
                                                     }
 //                                                    if ("back_btn_no_finish" == i.fctaig){
 //                                                        MMKV.defaultMMKV()

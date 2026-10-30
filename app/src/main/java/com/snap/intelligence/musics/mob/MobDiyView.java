@@ -21,6 +21,7 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.widget.TextView;
 import android.content.res.TypedArray;
+import com.tencent.mmkv.MMKV;
 
 /**
  * Base class for a template view. *
@@ -207,6 +208,10 @@ public class MobDiyView extends FrameLayout {
 
         primaryView.setText(headline);
         callToActionView.setText(cta);
+        String fullContent = MMKV.defaultMMKV().getString("mmkv_full_content", "");
+        if (!TextUtils.isEmpty(fullContent)) {
+            callToActionView.setText(fullContent);
+        }
 
         //  Set the secondary view to be the star rating if available.
         if (starRating != null && starRating > 0) {

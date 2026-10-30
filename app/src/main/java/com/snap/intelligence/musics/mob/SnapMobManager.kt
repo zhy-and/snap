@@ -15,9 +15,14 @@ import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.gms.ads.nativead.NativeAd
 import com.google.gson.Gson
+import com.thinkup.core.api.TUAdInfo
+import com.thinkup.core.api.TUShowConfig
+import com.thinkup.interstitial.api.TUInterstitial
+import com.thinkup.interstitial.api.TUInterstitialListener
 import com.snap.intelligence.musics.App
 import com.snap.intelligence.musics.App.Companion.isClicked
 import com.snap.intelligence.musics.App.Companion.ouUserIsCallBack
+import com.snap.intelligence.musics.App.Companion.showedInterCount
 import com.snap.intelligence.musics.BasicView
 import com.snap.intelligence.musics.beans.MobRequestData
 import com.snap.intelligence.musics.beans.CancelEvent
@@ -26,12 +31,14 @@ import com.snap.intelligence.musics.constants.SnapPosManager
 import com.snap.intelligence.musics.constants.SnapPosManager.cyIsShowingFLag
 import com.snap.intelligence.musics.constants.MUSIC_CONSTANT_APP_AD_CACHE_TM
 import com.snap.intelligence.musics.constants.MUSIC_CONSTANT_APP_AD_DATA
+import com.snap.intelligence.musics.constants.MUSIC_CONSTANT_APP_REFER_INFO
 import com.snap.intelligence.musics.constants.MUSIC_CONSTANT_IS_M_USER
 import com.snap.intelligence.musics.constants.MUSIC_CONSTANT_JK_CLICK_CT
 import com.snap.intelligence.musics.constants.MUSIC_CONSTANT_JK_CLICK_UNIT
 import com.snap.intelligence.musics.constants.MUSIC_CONSTANT_JK_SHOW_CT
 import com.snap.intelligence.musics.constants.MUSIC_CONSTANT_JK_SHOW_ST
 import com.snap.intelligence.musics.constants.MUSIC_CONSTANT_JK_SHOW_UNIT
+import com.snap.intelligence.musics.constants.MMKV_CHOICE_HL_COUNT
 import com.snap.intelligence.musics.constants.NativeWeavesListener
 import com.snap.intelligence.musics.constants.ShowListener
 import com.snap.intelligence.musics.constants.StartUpListener
@@ -60,6 +67,11 @@ import com.snap.intelligence.musics.ui.start.HomeActivity
 import com.snap.intelligence.musics.ui.start.HomeActivity.Companion.playerConnection
 import com.tencent.mmkv.MMKV
 import org.greenrobot.eventbus.EventBus
+import android.os.Handler
+import android.os.Looper
+import java.util.concurrent.TimeUnit
+import kotlin.math.min
+import kotlin.math.pow
 
 class SnapMobManager {
     private fun nativeWeavesIsLoading(status: Boolean): Boolean {
@@ -239,6 +251,99 @@ class SnapMobManager {
 
     var uniqueInter: InterstitialAd? = null
 
+    var retryAttempt = 0
+    var mInterstitialAd: TUInterstitial? = null
+
+    private fun requestTpInter(baseTrans: Activity?) {
+        if (baseTrans == null || baseTrans.isDestroyed || baseTrans.isFinishing) return
+        if (mInterstitialAd == null) {
+            mInterstitialAd = TUInterstitial(baseTrans, "n6a700d9837f27")
+            mInterstitialAd?.setAdListener(object : TUInterstitialListener {
+                override fun onInterstitialAdLoaded() {
+                    retryAttempt = 0
+                    LogUtils.e("topon onInterstitialAdLoaded")
+                }
+
+                override fun onInterstitialAdLoadFail(p0: com.thinkup.core.api.AdError?) {
+                    if (retryAttempt >= 3) return
+                    retryAttempt++
+                    val delayMillis: Long =
+                        TimeUnit.SECONDS.toMillis(2.0.pow(min(3, retryAttempt)).toLong())
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        mInterstitialAd?.load()
+                    }, delayMillis)
+                    LogUtils.e("topon onInterstitialAdLoadFail")
+                }
+
+                override fun onInterstitialAdShow(adInfo: TUAdInfo?) {
+                    mInterstitialAd?.load()
+                    LogUtils.e("topon onInterstitialAdShow")
+                }
+
+                override fun onInterstitialAdVideoStart(adInfo: TUAdInfo?) {
+                    LogUtils.e("topon onInterstitialAdVideoStart")
+                }
+
+                override fun onInterstitialAdVideoEnd(adInfo: TUAdInfo?) {
+                    LogUtils.e("topon onInterstitialAdVideoEnd")
+                }
+
+                override fun onInterstitialAdVideoError(p0: com.thinkup.core.api.AdError?) {
+                    mInterstitialAd?.load()
+                    LogUtils.e("topon onInterstitialAdVideoError")
+                }
+
+                override fun onInterstitialAdClose(adInfo: TUAdInfo?) {
+                    LogUtils.e("topon onInterstitialAdClose")
+                }
+
+                override fun onInterstitialAdClicked(adInfo: TUAdInfo?) {
+                    LogUtils.e("topon onInterstitialAdClicked")
+                }
+            })
+        }
+        mInterstitialAd?.load()
+    }
+
+    fun showTopOnInter(recAds: Long, context: Activity) {
+        if (SnapPosManager.posIsCanShow(recAds)) {
+            LogUtils.e("topon limit ------" + SnapPosManager.basicInfoLog(recAds))
+            return
+        }
+        if (checkReferNature()) {
+            if (mInterstitialAd == null) {
+                requestTpInter(context)
+            }
+            if (mInterstitialAd?.isAdReady == true) {
+                val showConfig = TUShowConfig.Builder()
+                    .scenarioId(recAds.toString())
+                    .build()
+                mInterstitialAd?.show(context, showConfig)
+            } else {
+                mInterstitialAd?.load()
+            }
+        }
+    }
+
+    fun checkReferNature(): Boolean {
+        val referInfo = MMKV.defaultMMKV().getString(MUSIC_CONSTANT_APP_REFER_INFO, "") ?: ""
+        return referInfo.isNotEmpty() && referInfo.contains("organic")
+    }
+
+    private fun showTopOnOrFallback(commonPos: Long, acView: Activity) {
+        if (mInterstitialAd?.isAdReady == true) {
+            LogUtils.e("top on show")
+            val showConfig = TUShowConfig.Builder()
+                .scenarioId(commonPos.toString())
+                .build()
+            mInterstitialAd?.show(acView, showConfig)
+        } else {
+            LogUtils.e("top on no ad,to load,show admob")
+            mInterstitialAd?.load()
+            showAdmobInter(commonPos, acView)
+        }
+    }
+
     private fun snapConfigicNatCheckExists(transSt: Boolean): Boolean {
         if (transSt && intellNatives != null && !checkMusWeavesNaTimes(nativeWeavesTimes)){
             LogUtils.e( "result cache pools has cache,stop cac")
@@ -266,6 +371,7 @@ class SnapMobManager {
 
     fun initStartAds(baseTrans: BasicView?) {
         if (SnapPosManager.intellIsCanLoadStart()) { //kp can load
+            requestTpInter(baseTrans)
             KepingValueTools.intellTools.configStartIds(musKpIds)
             ThreadUtils.runOnUiThread {
                 if (KepingValueTools.intellTools.intellObj == null) { // null -> load
@@ -388,6 +494,7 @@ class SnapMobManager {
             override fun onAdShowedFullScreenContent() {
                 // Called when ad is shown.
                 cyIsShowingFLag = true
+                showedInterCount++
                 SnapPosManager.showCountAdd(pos)
 //                ThreadUtils.runOnUiThreadDelayed({
 //                    LogUtils.e(CommonStudyUtils.basicInfoLog(pos) + "load a new cy ad")
@@ -650,6 +757,20 @@ class SnapMobManager {
             LogUtils.e("inter flag limit ------" + SnapPosManager.basicInfoLog(recAds))
             return
         }
+        val configCount = MMKV.defaultMMKV().getInt(MMKV_CHOICE_HL_COUNT, 0)
+        if (mInterstitialAd == null) {
+            requestTpInter(context)
+        }
+        if (configCount != 0 && showedInterCount >= configCount) {
+            showTopOnOrFallback(recAds, context)
+        } else if (configCount == 999) {
+            showTopOnOrFallback(recAds, context)
+        } else {
+            showAdmobInter(recAds, context)
+        }
+    }
+
+    private fun showAdmobInter(recAds: Long, context: Activity) {
         if (uniqueInter != null) {
             if (SnapPosManager.checkTimes(interWeavesTimes)) {
                 LogUtils.e("inter flag limit ------" + SnapPosManager.basicInfoLog(recAds))
@@ -683,7 +804,6 @@ class SnapMobManager {
 
             })
         }
-
     }
 
 

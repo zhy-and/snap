@@ -27,6 +27,7 @@ import com.tencent.mmkv.MMKV
 import com.zionhuang.innertube.MainBe
 import com.snap.intelligence.musics.BasicView
 import com.snap.intelligence.musics.R
+import com.snap.intelligence.musics.constants.playViewsInter
 import com.snap.intelligence.musics.constants.queueInter
 import com.snap.intelligence.musics.databinding.ActLoPlayerBinding
 import com.snap.intelligence.musics.extensions.mediaItems
@@ -34,6 +35,7 @@ import com.snap.intelligence.musics.extensions.toggleRepeatMode
 import com.snap.intelligence.musics.local.DataKeeper.initCreateData
 import com.snap.intelligence.musics.local.DataKeeper.loadSongs
 import com.snap.intelligence.musics.local.LocalHomeActivity.Companion.playerConnection
+import com.snap.intelligence.musics.mob.SnapMobManager
 import jp.wasabeef.glide.transformations.CropCircleTransformation
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
@@ -85,6 +87,7 @@ private lateinit var binding: ActLoPlayerBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        SnapMobManager.homeStudy.getShowCyAds(playViewsInter(),this)
         enableEdgeToEdge()
         binding = ActLoPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)

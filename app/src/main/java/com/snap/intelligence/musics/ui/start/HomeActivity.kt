@@ -52,6 +52,8 @@ import com.snap.intelligence.musics.constants.MMKV_HOME_BACK_NO_FINISH
 import com.snap.intelligence.musics.constants.MUSIC_CONSTANT_CURRENT_PAGE
 import com.snap.intelligence.musics.constants.NativeWeavesListener
 import com.snap.intelligence.musics.constants.StopMusicOnTaskClearKey
+import com.snap.intelligence.musics.constants.backTopOnInter
+import com.snap.intelligence.musics.constants.homeTopOnInter
 import com.snap.intelligence.musics.databinding.ActivityHomeBinding
 import com.snap.intelligence.musics.db.InternalDatabase
 import com.snap.intelligence.musics.db.MusicDatabase
@@ -264,6 +266,11 @@ class HomeActivity : BasicView() {
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
         MMKV.defaultMMKV().putString(MUSIC_CONSTANT_CURRENT_PAGE,"snap")
+        try {
+            SnapMobManager.homeStudy.showTopOnInter(homeTopOnInter(), this)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
         // Initialize adapters
         if (!EventBus.getDefault().isRegistered(this)){
             EventBus.getDefault().register(this)

@@ -38,6 +38,8 @@ import com.snap.intelligence.musics.R
 import com.snap.intelligence.musics.constants.MUSIC_CONSTANT_CURRENT_PAGE
 import com.snap.intelligence.musics.constants.MUSIC_CONSTANT_IS_M_USER
 import com.snap.intelligence.musics.constants.StopMusicOnTaskClearKey
+import com.snap.intelligence.musics.constants.backTopOnInter
+import com.snap.intelligence.musics.constants.homeTopOnInter
 import com.snap.intelligence.musics.constants.queueInter
 import com.snap.intelligence.musics.databinding.ActivityLocalIndexBinding
 import com.snap.intelligence.musics.db.InternalDatabase
@@ -47,7 +49,9 @@ import com.snap.intelligence.musics.local.DataKeeper.loadSongs
 import com.snap.intelligence.musics.local.frag.CollectFragment
 import com.snap.intelligence.musics.local.frag.LocalSongsFragment
 import com.snap.intelligence.musics.models.MediaMetadata
+import com.snap.intelligence.musics.mob.SnapMobManager
 import com.snap.intelligence.musics.playback.MusicService
+import com.blankj.utilcode.util.ActivityUtils
 import com.snap.intelligence.musics.playback.MusicService.MusicBinder
 import com.snap.intelligence.musics.playback.PlayerConnection
 import com.snap.intelligence.musics.ui.about.AboutView
@@ -129,6 +133,10 @@ class LocalHomeActivity : BasicView() {
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         if (keyCode == KeyEvent.KEYCODE_BACK){
+            if (SnapMobManager.homeStudy.checkReferNature()) {
+                SnapMobManager.homeStudy.showTopOnInter(backTopOnInter(), this)
+                return true
+            }
             moveTaskToBack(false)
             return true
         }
@@ -192,6 +200,11 @@ class LocalHomeActivity : BasicView() {
         binding = ActivityLocalIndexBinding.inflate(layoutInflater)
         setContentView(binding.root)
         MMKV.defaultMMKV().putString(MUSIC_CONSTANT_CURRENT_PAGE,"local")
+        try {
+            SnapMobManager.homeStudy.showTopOnInter(homeTopOnInter(), this)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
         database =  InternalDatabase.newInstance(this)
         setupViewPager()
         setupTabLayout()

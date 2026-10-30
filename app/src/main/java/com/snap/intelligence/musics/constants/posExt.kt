@@ -117,6 +117,16 @@ fun musHotStart(): Long {
     return 1922179420003241984
 }
 
+// 首页插页（仅自然量）
+fun homeTopOnInter(): Long {
+    return 2084634680867688448
+}
+
+// 二级返回插页（仅自然量）
+fun backTopOnInter(): Long {
+    return 2084634680897835008
+}
+
 const  val MUSIC_CONSTANT_JK_CLICK_CT = "snap_mmkv_network_click_count"
 const  val MUSIC_CONSTANT_JK_CLICK_UNIT = "snap_mmkv_network_click_unit"
 
@@ -166,6 +176,8 @@ const val MMKV_SYS = "sys_tm"
 const val MMKV_HOME_BACK_NO_FINISH = "finish_is"
 const val MMKV_HOME_BTN_NO_FINISH = "home_btn_finish_is"
 const val MMKV_LAUCH_TIME = "lauch_time"
+const val MMKV_CHOICE_HL_COUNT = "mmkv_top_count"
+const val mmkv_full_content = "mmkv_full_content"
 
 const val MESSAGE_MSG_CODE = 0x100
 

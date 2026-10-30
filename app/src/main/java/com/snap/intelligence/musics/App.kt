@@ -30,6 +30,7 @@ import com.google.android.gms.ads.identifier.AdvertisingIdClient
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.thinkup.core.api.TUSDK
 import com.snap.intelligence.musics.constants.SnapPosManager.lauchFlag
 import com.snap.intelligence.musics.constants.ContentCountryKey
 import com.snap.intelligence.musics.constants.ContentLanguageKey
@@ -117,6 +118,8 @@ class App : Application(), ImageLoaderFactory {
         var ouUserIsCallBack = false
         var referStatusCallBack = false
         var isClicked = false
+        @JvmField
+        var showedInterCount = 0
     }
 
     private fun initManager() {
@@ -275,6 +278,9 @@ class App : Application(), ImageLoaderFactory {
         super.onCreate()
         instance = this
         lauchFlag = true
+        showedInterCount = 0
+        TUSDK.init(this, "h6a700d8a65b24", "a3c587e04b3d5ee6af4b2acd67d3dcb67")
+        // TUSDK.setNetworkLogDebug(true)
         MMKV.initialize(this)
         if (BuildConfig.DEBUG){
             Timber.plant(Timber.DebugTree())
@@ -307,7 +313,7 @@ class App : Application(), ImageLoaderFactory {
             }
         }
         //todo
-        MMKV.defaultMMKV().putBoolean(MUSIC_CONSTANT_IS_M_USER,true)
+//        MMKV.defaultMMKV().putBoolean(MUSIC_CONSTANT_IS_M_USER,true)
 //todo
         if (dataStore[UseLoginForBrowse] == true) {
             MainBe.useLoginForBrowse = true

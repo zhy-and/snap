@@ -53,6 +53,12 @@ class EasyStudio {
     private fun createClient() = HttpClient(OkHttp) {
         expectSuccess = true
 
+        install(HttpTimeout) {
+            requestTimeoutMillis = 30_000
+            connectTimeoutMillis = 15_000
+            socketTimeoutMillis = 15_000
+        }
+
         install(ContentNegotiation) {
             json(Json {
                 ignoreUnknownKeys = true

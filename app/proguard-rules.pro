@@ -271,40 +271,22 @@
  -dontwarn com.gyf.immersionbar.**
 
 
+# Only strip debug/verbose logs. Do NOT strip e/w — R8 may remove catch blocks
+# that only log errors (can unmask SDK-internal swallowed exceptions in release).
 -assumenosideeffects class android.util.Log {
     public static *** d(...);
-    public static *** e(...);
+    public static *** v(...);
     public static *** i(...);
-    public static *** v(...);
-    public static *** println(...);
-    public static *** w(...);
-    public static *** wtf(...);
-}
--assumenosideeffects class android.util.Log {
-   public static *** d(...);
-   public static *** v(...);
 }
 
--assumenosideeffects class android.util.Log {
-    public static *** e(...);
-    public static *** v(...);
-}
-
--assumenosideeffects class android.util.Log {
-    public static *** i(...);
-    public static *** v(...);
-}
-
--assumenosideeffects class android.util.Log {
-    public static *** w(...);
-    public static *** v(...);
-}
--assumenosideeffects class java.io.PrintStream {
-    public *** println(...);
-    public *** print(...);
-}
-
+# AppsFlyer: keep alone is not enough — R8 optimize can drop its JSONException
+# handlers (debug OK / release crash: "Value ok ... cannot be converted to JSONObject").
 -keep class com.appsflyer.** { *; }
+-keepclassmembers class com.appsflyer.** { *; }
+-dontwarn com.appsflyer.**
+# Avoid stripping / rewriting AF try-catch around JSONObject("ok") responses.
+-optimizations !code/removal/simpleexceptionhandlers,!code/removal/exceptionhandlers
+
   -keep class kotlin.jvm.internal.** { *; }
 
   -keep public class com.android.installreferrer.** { *; }
@@ -333,3 +315,86 @@
   -dontwarn jdk.dynalink.**
   -dontwarn com.google.re2j.**
 
+# Vungle
+-dontwarn com.vungle.ads.**
+-keepclassmembers class com.vungle.ads.** {
+  *;
+}
+-keep class com.vungle.ads.**
+
+# START OkHttp + Okio
+-dontwarn javax.annotation.**
+-adaptresourcefilenames okhttp3/internal/publicsuffix/PublicSuffixDatabase.gz
+-dontwarn org.codehaus.mojo.animal_sniffer.*
+-dontwarn okhttp3.internal.platform.**
+-dontwarn org.conscrypt.**
+-dontwarn org.bouncycastle.**
+-dontwarn org.openjsse.**
+# END OkHttp + Okio
+
+# START Protobuf
+-dontwarn com.google.protobuf.**
+-keepclassmembers class com.google.protobuf.** {
+ *;
+}
+-keep class * extends com.google.protobuf.GeneratedMessageLite { *; }
+# END Protobuf
+
+-keepclassmembers class com.ironsource.sdk.controller.IronSourceWebView$JSInterface {
+    public *;
+}
+-keepclassmembers class * implements android.os.Parcelable {
+    public static final android.os.Parcelable$Creator *;
+}
+-keep class com.ironsource.adapters.** { *; }
+-dontwarn com.ironsource.mediationsdk.**
+-dontwarn com.ironsource.adapters.**
+-keepattributes JavascriptInterface
+-keepclassmembers class * {
+    @android.webkit.JavascriptInterface <methods>;
+}
+-keep class com.bytedance.sdk.** { *; }
+-keep class com.inmobi.** { *; }
+-dontwarn com.squareup.picasso.**
+-keep class com.squareup.picasso.** {*;}
+-dontwarn com.squareup.okhttp.**
+-keep class com.moat.** {*;}
+-dontwarn com.moat.**
+-dontwarn com.iab.**
+-keepattributes Signature
+-keep class com.mbridge.** {*; }
+-keep interface com.mbridge.** {*; }
+-dontwarn com.mbridge.**
+-keepclassmembers class **.R$* { public static final int mbridge*; }
+
+-keep public class com.mbridge.* extends androidx.** { *; }
+-keep public class androidx.viewpager.widget.PagerAdapter{*;}
+-keep public class androidx.viewpager.widget.ViewPager.OnPageChangeListener{*;}
+-keep interface androidx.annotation.IntDef{*;}
+-keep interface androidx.annotation.Nullable{*;}
+-keep interface androidx.annotation.CheckResult{*;}
+-keep interface androidx.annotation.NonNull{*;}
+-keep public class androidx.fragment.app.Fragment{*;}
+-keep public class androidx.core.content.FileProvider{*;}
+-keep public class androidx.core.app.NotificationCompat{*;}
+-keep public class androidx.appcompat.widget.AppCompatImageView {*;}
+-keep public class androidx.recyclerview.*{*;}
+-keep class com.mbridge.msdk.foundation.tools.FastKV{*;}
+-keep class com.mbridge.msdk.foundation.tools.FastKV$Builder{*;}
+-keep class com.chartboost.** { *; }
+
+-keep public class io.bidmachine.** { *; }
+-keep public interface io.bidmachine.** { *; }
+
+# Ktor (HttpTimeout / OkHttpEngine etc. stripped by R8 otherwise)
+-keep class io.ktor.** { *; }
+-keepclassmembers class io.ktor.** { *; }
+-dontwarn io.ktor.**
+-keep class com.zionhuang.innertube.** { *; }
+-keep public class com.google.android.gms.** { public protected *; }
+
+# ThinkUp / TopOn: R8 must not rename org.json (else optJSONArray returns L1LlL11 vs platform JSONArray)
+-keep class org.json.** { *; }
+-dontwarn org.json.**
+-keep class com.thinkup.** { *; }
+-dontwarn com.thinkup.**
