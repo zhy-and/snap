@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "492977322885",
+    "project_id": "music-snap-android",
+    "storage_bucket": "music-snap-android.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:492977322885:android:79357e217dd890f2f1a2ec",
+        "android_client_info": {
+          "package_name": "com.snap.intelligence.musics"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCzmq5XNyDsU_j7AYONbnf9eAlmgmpL6ig"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
